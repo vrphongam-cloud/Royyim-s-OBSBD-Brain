@@ -19,13 +19,15 @@ def crystallize(files):
     
     combined = "\n\n".join([f"=== {f['name']} ===\n{f['content']}" for f in files])
     
-    message = client.messages.create(
-        model="claude-opus-4-6",
-        max_tokens=2000,
-        messages=[{
-            "role": "user",
-            "content": f"""คุณคือ Knowledge Agent ของ FN Decor Design
-            
+    for attempt in range(3):
+        try:
+            message = client.messages.create(
+                model="claude-opus-4-6",
+                max_tokens=2000,
+                messages=[{
+                    "role": "user",
+                    "content": f"""คุณคือ Knowledge Agent ของ FN Decor Design
+                    
 อ่านไฟล์เหล่านี้จาก inbox แล้วทำการตกผลึกความรู้:
 1. สกัดประเด็นสำคัญ
 2. เชื่อมโยงกับงาน Interior Design
@@ -33,9 +35,15 @@ def crystallize(files):
 
 ไฟล์จาก inbox:
 {combined}"""
-        }]
-    )
-    return message.content[0].text
+                }]
+            )
+            return message.content[0].text
+        except Exception as e:
+            print(f"Attempt {attempt+1} failed: {e}")
+            if attempt < 2:
+                import time
+                time.sleep(30)
+    return "Error: ไม่สามารถเชื่อมต่อ Claude API ได้หลังจากลอง 3 ครั้งค่ะ"
 
 def save_to_knowledge_base(result):
     today = datetime.date.today().strftime("%Y-%m-%d")
