@@ -23,6 +23,7 @@ jobs:
       - name: Run loop
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          CLAUDE_PROJECT_ID: ${{ secrets.CLAUDE_PROJECT_ID }}
         run: python scripts/loop.py
 
       - name: Commit results
@@ -31,5 +32,5 @@ jobs:
           git config user.email "brain@fn-decor.com"
           git add knowledge-base/ logs/
           git diff --staged --quiet || git commit -m "Brain loop: $(date +'%Y-%m-%d')"
-          git pull --rebase origin main                    
+          git pull --rebase origin main
           git push
